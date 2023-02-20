@@ -3,7 +3,7 @@ from deepsnake.cfg.default import DisplayConfig, GameConfig
 
 
 def main():
-    snake_game = SnakeGame(DisplayConfig(), GameConfig())
+    _ = SnakeGame(DisplayConfig(), GameConfig())
 
 
 if __name__ == "__main__":
