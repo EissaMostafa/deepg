@@ -2,7 +2,7 @@
 name = "deepsnake"
 version = "0.1.0"
 description = ""
-authors = ["Mostafa Eissa"]
+authors = ["Milena Zurmuehl, Mostafa Eissa"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
