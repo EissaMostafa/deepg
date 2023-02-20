@@ -47,16 +47,16 @@ class SnakeGame:
         pygame.display.flip()
 
     def move(self, direction: Direction):
-        h_x, h_y = self.snake[0]
-        self.snake.pop()  # Remove last block (end of the snake tail)
+        h_x, h_y = self.snake[-1]
+        self.snake = self.snake[1:]  # Remove last block (end of the snake tail)
         if direction == Direction.UP:
-            self.snake.insert(0, (h_x, h_y - self.display_cfg.block_size))
+            self.snake.append((h_x, h_y - self.display_cfg.block_size))
         if direction == Direction.DOWN:
-            self.snake.insert(0, (h_x, h_y + self.display_cfg.block_size))
+            self.snake.append((h_x, h_y + self.display_cfg.block_size))
         if direction == Direction.LEFT:
-            self.snake.insert(0, (h_x - self.display_cfg.block_size, h_y))
+            self.snake.append((h_x - self.display_cfg.block_size, h_y))
         if direction == Direction.RIGHT:
-            self.snake.insert(0, (h_x + self.display_cfg.block_size, h_y))
+            self.snake.append((h_x + self.display_cfg.block_size, h_y))
 
     def exec_key(self, keys):
         if keys[pygame.K_UP]:
