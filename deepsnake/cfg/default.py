@@ -1,3 +1,5 @@
+from enum import Enum
+
 conf_dict = {
     # GAME
     "caption": "Snake Game!",
@@ -13,6 +15,13 @@ conf_dict = {
     "blue": (0, 0, 200),
     "black": (0, 0, 0),
 }
+
+
+class Direction(Enum):
+    UP = 1
+    DOWN = 2
+    RIGHT = 3
+    LEFT = 4
 
 
 class Config(object):
