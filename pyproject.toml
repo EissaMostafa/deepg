@@ -2,11 +2,11 @@
 name = "deepsnake"
 version = "0.1.0"
 description = ""
-authors = ["Mostafa Eissa"]
+authors = ["Milena Zurmuehl, Mostafa Eissa"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "~3.10"
 pygame = "^2.1.3"
 torch = "^1.13.1"
 torchvision = "^0.14.1"
