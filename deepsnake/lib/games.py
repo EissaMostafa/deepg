@@ -19,8 +19,12 @@ class SnakeGame:
         pygame.display.set_caption(self.display_cfg.caption)
         self.snake = [(300, 300)]
         self.food = Food(
-            random.randint(0, self.display_cfg.width),
-            random.randint(0, self.display_cfg.height),
+            random.choice(
+                range(0, self.display_cfg.width, self.display_cfg.block_size)
+            ),
+            random.choice(
+                range(0, self.display_cfg.height, self.display_cfg.block_size)
+            ),
         )
         self.draw_display()
 
