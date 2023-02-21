@@ -2,6 +2,9 @@ import pygame
 import random
 import time
 from deepsnake.cfg.default import Direction, DisplayConfig, GameConfig
+from collections import namedtuple
+
+Food = namedtuple("Food", "x y")
 
 
 class SnakeGame:
@@ -15,8 +18,11 @@ class SnakeGame:
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
         self.snake = [(300, 300)]
-        self._draw_food()
-        self.draw_snake()
+        self.food = Food(
+            random.randint(0, self.display_cfg.width),
+            random.randint(0, self.display_cfg.height),
+        )
+        self.draw_display()
 
     def _draw_food(self):
         # TODO: make sure to generate the food outside the snake, and substract the block_size from the randint
@@ -24,15 +30,14 @@ class SnakeGame:
             self.display,
             self.display_cfg.green,
             pygame.Rect(
-                random.randint(0, self.display_cfg.width),
-                random.randint(0, self.display_cfg.height),
+                self.food.x,
+                self.food.y,
                 self.display_cfg.block_size,
                 self.display_cfg.block_size,
             ),
         )
-        pygame.display.flip()
 
-    def draw_snake(self):
+    def _draw_snake(self):
         for x, y in self.snake:
             pygame.draw.rect(
                 self.display,
@@ -44,6 +49,11 @@ class SnakeGame:
                     self.display_cfg.block_size,
                 ),
             )
+
+    def draw_display(self):
+        self.display.fill(0)
+        self._draw_food()
+        self._draw_snake()
         pygame.display.flip()
 
     def move(self, direction: Direction):
@@ -57,13 +67,15 @@ class SnakeGame:
             self.snake.append((h_x - self.display_cfg.block_size, h_y))
         if direction == Direction.RIGHT:
             self.snake.append((h_x + self.display_cfg.block_size, h_y))
+        self.draw_display()
 
-    def exec_key(self, keys):
-        if keys[pygame.K_UP]:
-            self.move(Direction.UP)
-        if keys[pygame.K_DOWN]:
-            self.move(Direction.DOWN)
-        if keys[pygame.K_LEFT]:
-            self.move(Direction.LEFT)
-        if keys[pygame.K_RIGHT]:
-            self.move(Direction.RIGHT)
+    def exec_key(self, key):
+        if key == pygame.K_UP:
+            direction = Direction.UP
+        if key == pygame.K_DOWN:
+            direction = Direction.DOWN
+        if key == pygame.K_LEFT:
+            direction = Direction.LEFT
+        if key == pygame.K_RIGHT:
+            direction = Direction.RIGHT
+        return direction
