@@ -13,7 +13,8 @@ def main():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 direction = snake_game.exec_key(event.key)
-        snake_game.move(direction)
+        snake_game.move_snake(direction)
+        snake_game.draw_display()
         pygame.time.wait(500)
 
 

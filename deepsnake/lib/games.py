@@ -62,12 +62,12 @@ class SnakeGame:
             )
 
     def draw_display(self):
-        self.display.fill(0)
+        self.display.fill(self.display_cfg.black)
         self._draw_food()
         self._draw_snake()
         pygame.display.flip()
 
-    def move(self, direction: Direction):
+    def move_snake(self, direction: Direction):
         h_x, h_y = self.snake[-1]
         self.snake = self.snake[1:]  # Remove last block (end of the snake tail)
         if direction == Direction.UP:
@@ -78,7 +78,6 @@ class SnakeGame:
             self.snake.append((h_x - self.display_cfg.block_size, h_y))
         if direction == Direction.RIGHT:
             self.snake.append((h_x + self.display_cfg.block_size, h_y))
-        self.draw_display()
 
     def exec_key(self, key):
         if key == pygame.K_UP:
