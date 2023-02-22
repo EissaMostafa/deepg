@@ -34,6 +34,7 @@ class SnakeGame:
             ),
         )
         self.direction = Direction.RIGHT
+        self.clock = pygame.time.Clock()
         self._draw_display()
 
     def _draw_food(self):
@@ -80,7 +81,7 @@ class SnakeGame:
         if self.direction == Direction.RIGHT:
             self.snake.append((h_x + self.display_cfg.block_size, h_y))
 
-    def read_key(self, key):
+    def handle_key(self, key):
         if key == pygame.K_UP:
             self.direction = Direction.UP
         if key == pygame.K_DOWN:
@@ -93,3 +94,4 @@ class SnakeGame:
     def play_step(self):
         self._move_snake()
         self._draw_display()
+        self.clock.tick(self.game_cfg.speed)
