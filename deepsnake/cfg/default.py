@@ -24,6 +24,11 @@ class Direction(Enum):
     LEFT = 4
 
 
+class GameStatus(Enum):
+    RUNNING = 1
+    GAME_OVER = 0
+
+
 class Config(object):
     def __init__(self):
         self._config = conf_dict
