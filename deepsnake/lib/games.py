@@ -17,10 +17,21 @@ class SnakeGame:
         )
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
-        self.snake = [(300, 300)]
+        self.snake = [
+            (
+                self.display_cfg.block_size
+                * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
+                self.display_cfg.block_size
+                * int(self.display_cfg.height / (2 * self.display_cfg.block_size)),
+            )
+        ]
         self.food = Food(
-            random.randint(0, self.display_cfg.width),
-            random.randint(0, self.display_cfg.height),
+            random.choice(
+                range(0, self.display_cfg.width, self.display_cfg.block_size)
+            ),
+            random.choice(
+                range(0, self.display_cfg.height, self.display_cfg.block_size)
+            ),
         )
         self.draw_display()
 
