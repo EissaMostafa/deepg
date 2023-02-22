@@ -33,7 +33,8 @@ class SnakeGame:
                 range(0, self.display_cfg.height, self.display_cfg.block_size)
             ),
         )
-        self.draw_display()
+        self.direction = Direction.RIGHT
+        self._draw_display()
 
     def _draw_food(self):
         # TODO: make sure to generate the food outside the snake, and substract the block_size from the randint
@@ -61,31 +62,34 @@ class SnakeGame:
                 ),
             )
 
-    def draw_display(self):
+    def _draw_display(self):
         self.display.fill(self.display_cfg.black)
         self._draw_food()
         self._draw_snake()
         pygame.display.flip()
 
-    def move_snake(self, direction: Direction):
+    def _move_snake(self):
         h_x, h_y = self.snake[-1]
         self.snake = self.snake[1:]  # Remove last block (end of the snake tail)
-        if direction == Direction.UP:
+        if self.direction == Direction.UP:
             self.snake.append((h_x, h_y - self.display_cfg.block_size))
-        if direction == Direction.DOWN:
+        if self.direction == Direction.DOWN:
             self.snake.append((h_x, h_y + self.display_cfg.block_size))
-        if direction == Direction.LEFT:
+        if self.direction == Direction.LEFT:
             self.snake.append((h_x - self.display_cfg.block_size, h_y))
-        if direction == Direction.RIGHT:
+        if self.direction == Direction.RIGHT:
             self.snake.append((h_x + self.display_cfg.block_size, h_y))
 
-    def exec_key(self, key):
+    def read_key(self, key):
         if key == pygame.K_UP:
-            direction = Direction.UP
+            self.direction = Direction.UP
         if key == pygame.K_DOWN:
-            direction = Direction.DOWN
+            self.direction = Direction.DOWN
         if key == pygame.K_LEFT:
-            direction = Direction.LEFT
+            self.direction = Direction.LEFT
         if key == pygame.K_RIGHT:
-            direction = Direction.RIGHT
-        return direction
+            self.direction = Direction.RIGHT
+
+    def play_step(self):
+        self._move_snake()
+        self._draw_display()

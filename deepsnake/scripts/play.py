@@ -12,9 +12,8 @@ def main():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                direction = snake_game.exec_key(event.key)
-        snake_game.move_snake(direction)
-        snake_game.draw_display()
+                snake_game.read_key(event.key)
+        snake_game.play_step()
         pygame.time.wait(500)
 
 
