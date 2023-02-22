@@ -71,14 +71,28 @@ class SnakeGame:
         h_x, h_y = self.snake[-1]
         self.snake = self.snake[1:]  # Remove last block (end of the snake tail)
         if direction == Direction.UP:
-            self.snake.append((h_x, h_y - self.display_cfg.block_size))
+            h_y -= self.display_cfg.block_size
         if direction == Direction.DOWN:
-            self.snake.append((h_x, h_y + self.display_cfg.block_size))
+            h_y += self.display_cfg.block_size
         if direction == Direction.LEFT:
-            self.snake.append((h_x - self.display_cfg.block_size, h_y))
+            h_x -= self.display_cfg.block_size
         if direction == Direction.RIGHT:
-            self.snake.append((h_x + self.display_cfg.block_size, h_y))
-        self.draw_display()
+            h_x += self.display_cfg.block_size
+
+        if self.check_within_display(h_x, h_y):
+            self.snake.append((h_x, h_y))
+            self.draw_display()
+            return True
+        else:
+            return False
+
+    def check_within_display(self, h_x, h_y):
+        if (h_x < 0) or (h_x >= self.display_cfg.width):
+            return False
+        elif (h_y < 0) or (h_y >= self.display_cfg.height):
+            return False
+        else:
+            return True
 
     def exec_key(self, key):
         if key == pygame.K_UP:
@@ -90,3 +104,14 @@ class SnakeGame:
         if key == pygame.K_RIGHT:
             direction = Direction.RIGHT
         return direction
+
+    def _game_over(self):
+        # If game over is true, draw game over
+        text = pygame.font.SysFont("arial", 70).render(
+            "Game Over", True, (255, 255, 255), (0, 0, 0)
+        )
+        text_rect = text.get_rect()
+        text_x = self.display.get_width() / 2 - text_rect.width / 2
+        text_y = self.display.get_height() / 2 - text_rect.height / 2
+        self.display.blit(text, [text_x, text_y])
+        pygame.display.flip()
