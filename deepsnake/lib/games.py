@@ -80,9 +80,8 @@ class SnakeGame:
         self._draw_snake()
         pygame.display.flip()
 
-    def _move_snake(self):
+    def _get_next_location(self):
         h_x, h_y = self.snake[-1]
-        self.snake.pop(0)  # Remove the end of the snake tail
         if self.direction == Direction.UP:
             h_y -= self.display_cfg.block_size
         if self.direction == Direction.DOWN:
@@ -91,7 +90,14 @@ class SnakeGame:
             h_x -= self.display_cfg.block_size
         if self.direction == Direction.RIGHT:
             h_x += self.display_cfg.block_size
+        return h_x, h_y
 
+    def _move_snake(self):
+        h_x, h_y = self._get_next_location()
+        if (h_x, h_y) == self.food:
+            self._create_new_food()
+        else:
+            self.snake.pop(0)  # Remove the end of the snake tail
         self.snake.append((h_x, h_y))  # Append a new head
 
     def _check_game_over(self):
@@ -135,3 +141,14 @@ class SnakeGame:
         self._check_game_over()
         self._draw_display()
         self.clock.tick(self.game_cfg.speed)
+
+    def _create_new_food(self):
+        # Todo: Make sure food is not created within body of snake
+        self.food = Food(
+            random.choice(
+                range(0, self.display_cfg.width, self.display_cfg.block_size)
+            ),
+            random.choice(
+                range(0, self.display_cfg.height, self.display_cfg.block_size)
+            ),
+        )
