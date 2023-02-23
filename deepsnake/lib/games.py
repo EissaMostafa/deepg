@@ -16,18 +16,22 @@ class SnakeGame:
         )
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
-        snake_init = (
+        snake_head_init = (
             self.display_cfg.block_size
             * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
             self.display_cfg.block_size
             * int(self.display_cfg.height / (2 * self.display_cfg.block_size)),
         )
         self.snake = [
-            snake_init,
-            # (
-            #     snake_init[0],
-            #     snake_init[1],
-            # ),
+            (
+                snake_head_init[0] - 2 * self.display_cfg.block_size,
+                snake_head_init[1],
+            ),
+            (
+                snake_head_init[0] - self.display_cfg.block_size,
+                snake_head_init[1],
+            ),
+            snake_head_init,
         ]
         self.food = Food(
             random.choice(
@@ -88,6 +92,26 @@ class SnakeGame:
 
         self.snake.append((h_x, h_y))
 
+    def _check_game_over(self):
+        h_x, h_y = self.snake[-1]
+        width_cond = (h_x < 0) or (h_x >= self.display_cfg.width)
+        height_cond = (h_y < 0) or (h_y >= self.display_cfg.height)
+        self_hit_cond = (h_x, h_y) in self.snake[:-1]
+        if width_cond or height_cond or self_hit_cond:
+            self.status = GameStatus.GAME_OVER
+
+    def _game_over(self):
+        # If game over is true, draw game over
+        text = pygame.font.SysFont("arial", 70).render(
+            "Game Over", True, (255, 255, 255), (0, 0, 0)
+        )
+        text_rect = text.get_rect()
+        text_x = self.display.get_width() / 2 - text_rect.width / 2
+        text_y = self.display.get_height() / 2 - text_rect.height / 2
+        self.display.blit(text, [text_x, text_y])
+        pygame.display.flip()
+        pygame.time.wait(1000)
+
     def handle_key(self, key):
         if key == pygame.K_UP and self.direction is not Direction.DOWN:
             self.direction = Direction.UP
@@ -103,23 +127,3 @@ class SnakeGame:
         self._check_game_over()
         self._draw_display()
         self.clock.tick(self.game_cfg.speed)
-
-    def _check_game_over(self):
-        h_x, h_y = self.snake[-1]
-        width_cond = (h_x < 0) or (h_x >= self.display_cfg.width)
-        height_cond = (h_y < 0) or (h_y >= self.display_cfg.height)
-        self_hit_cond = (h_x, h_y) in self.snake[1:]
-        if width_cond or height_cond or self_hit_cond:
-            self.status = GameStatus.GAME_OVER
-
-    def _game_over(self):
-        # If game over is true, draw game over
-        text = pygame.font.SysFont("arial", 70).render(
-            "Game Over", True, (255, 255, 255), (0, 0, 0)
-        )
-        text_rect = text.get_rect()
-        text_x = self.display.get_width() / 2 - text_rect.width / 2
-        text_y = self.display.get_height() / 2 - text_rect.height / 2
-        self.display.blit(text, [text_x, text_y])
-        pygame.display.flip()
-        pygame.time.wait(1000)
