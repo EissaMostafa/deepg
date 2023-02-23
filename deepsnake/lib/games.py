@@ -16,13 +16,18 @@ class SnakeGame:
         )
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
+        snake_init = (
+            self.display_cfg.block_size
+            * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
+            self.display_cfg.block_size
+            * int(self.display_cfg.height / (2 * self.display_cfg.block_size)),
+        )
         self.snake = [
-            (
-                self.display_cfg.block_size
-                * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
-                self.display_cfg.block_size
-                * int(self.display_cfg.height / (2 * self.display_cfg.block_size)),
-            )
+            snake_init,
+            # (
+            #     snake_init[0],
+            #     snake_init[1],
+            # ),
         ]
         self.food = Food(
             random.choice(
@@ -84,13 +89,13 @@ class SnakeGame:
         self.snake.append((h_x, h_y))
 
     def handle_key(self, key):
-        if key == pygame.K_UP:
+        if key == pygame.K_UP and self.direction is not Direction.DOWN:
             self.direction = Direction.UP
-        if key == pygame.K_DOWN:
+        if key == pygame.K_DOWN and self.direction is not Direction.UP:
             self.direction = Direction.DOWN
-        if key == pygame.K_LEFT:
+        if key == pygame.K_LEFT and self.direction is not Direction.RIGHT:
             self.direction = Direction.LEFT
-        if key == pygame.K_RIGHT:
+        if key == pygame.K_RIGHT and self.direction is not Direction.LEFT:
             self.direction = Direction.RIGHT
 
     def play_step(self):
