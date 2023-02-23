@@ -10,11 +10,8 @@ def main():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                snake_game.handle_key(event.key)
+                snake_game.read_key(event.key)
         snake_game.play_step()
-        if snake_game.status == GameStatus.GAME_OVER:
-            snake_game._game_over()
-            sys.exit()
 
 
 if __name__ == "__main__":
