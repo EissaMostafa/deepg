@@ -3,8 +3,8 @@ from enum import Enum
 conf_dict = {
     # GAME
     "caption": "Snake Game!",
-    "speed": 10,
-    "block_size": 30,
+    "speed": 16,
+    "block_size": 25,
     # DISPLAY
     "height": 800,
     "width": 800,

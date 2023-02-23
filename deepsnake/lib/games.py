@@ -1,5 +1,6 @@
 import pygame
 import random
+import sys
 from deepsnake.cfg.default import Direction, DisplayConfig, GameConfig, GameStatus
 from collections import namedtuple
 
@@ -16,13 +17,22 @@ class SnakeGame:
         )
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
+        snake_head_init = (
+            self.display_cfg.block_size
+            * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
+            self.display_cfg.block_size
+            * int(self.display_cfg.height / (2 * self.display_cfg.block_size)),
+        )
         self.snake = [
             (
-                self.display_cfg.block_size
-                * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
-                self.display_cfg.block_size
-                * int(self.display_cfg.height / (2 * self.display_cfg.block_size)),
-            )
+                snake_head_init[0] - 2 * self.display_cfg.block_size,
+                snake_head_init[1],
+            ),
+            (
+                snake_head_init[0] - self.display_cfg.block_size,
+                snake_head_init[1],
+            ),
+            snake_head_init,
         ]
         self.food = Food(
             random.choice(
@@ -34,6 +44,7 @@ class SnakeGame:
         )
         self.direction = Direction.RIGHT
         self.status = GameStatus.RUNNING
+        self.key_pressed = []
         self.clock = pygame.time.Clock()
         self._draw_display()
 
@@ -71,7 +82,7 @@ class SnakeGame:
 
     def _move_snake(self):
         h_x, h_y = self.snake[-1]
-        self.snake = self.snake[1:]  # Remove last block (end of the snake tail)
+        self.snake.pop(0)  # Remove the end of the snake tail
         if self.direction == Direction.UP:
             h_y -= self.display_cfg.block_size
         if self.direction == Direction.DOWN:
@@ -81,31 +92,16 @@ class SnakeGame:
         if self.direction == Direction.RIGHT:
             h_x += self.display_cfg.block_size
 
-        self.snake.append((h_x, h_y))
-
-    def handle_key(self, key):
-        if key == pygame.K_UP:
-            self.direction = Direction.UP
-        if key == pygame.K_DOWN:
-            self.direction = Direction.DOWN
-        if key == pygame.K_LEFT:
-            self.direction = Direction.LEFT
-        if key == pygame.K_RIGHT:
-            self.direction = Direction.RIGHT
-
-    def play_step(self):
-        self._move_snake()
-        self._check_game_over()
-        self._draw_display()
-        self.clock.tick(self.game_cfg.speed)
+        self.snake.append((h_x, h_y))  # Append a new head
 
     def _check_game_over(self):
         h_x, h_y = self.snake[-1]
         width_cond = (h_x < 0) or (h_x >= self.display_cfg.width)
         height_cond = (h_y < 0) or (h_y >= self.display_cfg.height)
-        self_hit_cond = (h_x, h_y) in self.snake[1:]
+        self_hit_cond = (h_x, h_y) in self.snake[:-1]
         if width_cond or height_cond or self_hit_cond:
-            self.status = GameStatus.GAME_OVER
+            self._game_over()
+            sys.exit()
 
     def _game_over(self):
         # If game over is true, draw game over
@@ -118,3 +114,24 @@ class SnakeGame:
         self.display.blit(text, [text_x, text_y])
         pygame.display.flip()
         pygame.time.wait(1000)
+
+    def _exec_key(self):
+        key = self.key_pressed.pop(0) if self.key_pressed else None
+        if key == pygame.K_UP and self.direction is not Direction.DOWN:
+            self.direction = Direction.UP
+        if key == pygame.K_DOWN and self.direction is not Direction.UP:
+            self.direction = Direction.DOWN
+        if key == pygame.K_LEFT and self.direction is not Direction.RIGHT:
+            self.direction = Direction.LEFT
+        if key == pygame.K_RIGHT and self.direction is not Direction.LEFT:
+            self.direction = Direction.RIGHT
+
+    def read_key(self, key_event):
+        self.key_pressed.append(key_event)
+
+    def play_step(self):
+        self._exec_key()
+        self._move_snake()
+        self._check_game_over()
+        self._draw_display()
+        self.clock.tick(self.game_cfg.speed)
