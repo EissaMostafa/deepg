@@ -80,7 +80,7 @@ class SnakeGame:
 
     def _move_snake(self):
         h_x, h_y = self.snake[-1]
-        self.snake = self.snake[1:]  # Remove last block (end of the snake tail)
+        self.snake.pop(0)  # Remove last block (end of the snake tail)
         if self.direction == Direction.UP:
             h_y -= self.display_cfg.block_size
         if self.direction == Direction.DOWN:
