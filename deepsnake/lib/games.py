@@ -76,7 +76,7 @@ class SnakeGame:
             )
 
     def _draw_score(self):
-        score = pygame.font.SysFont(None, 24).render(
+        score = pygame.font.SysFont(None, 32).render(
             f"Score: {self.score}", True, self.display_cfg.red
         )
         self.display.blit(score, (20, 20))
