@@ -44,6 +44,7 @@ class SnakeGame:
         )
         self.direction = Direction.RIGHT
         self.status = GameStatus.RUNNING
+        self.score = 0
         self.key_pressed = []
         self.clock = pygame.time.Clock()
         self._draw_display()
@@ -74,8 +75,15 @@ class SnakeGame:
                 ),
             )
 
+    def _draw_score(self):
+        score = pygame.font.SysFont(None, 24).render(
+            f"Score: {self.score}", True, self.display_cfg.red
+        )
+        self.display.blit(score, (20, 20))
+
     def _draw_display(self):
         self.display.fill(self.display_cfg.black)
+        self._draw_score()
         self._draw_food()
         self._draw_snake()
         pygame.display.flip()
@@ -96,6 +104,7 @@ class SnakeGame:
         h_x, h_y = self._get_next_location()
         if (h_x, h_y) == self.food:
             self._create_new_food()
+            self.score += 1
         else:
             self.snake.pop(0)  # Remove the end of the snake tail
         self.snake.append((h_x, h_y))  # Append a new head
@@ -112,7 +121,7 @@ class SnakeGame:
     def _game_over(self):
         # If game over is true, draw game over
         text = pygame.font.SysFont("arial", 70).render(
-            "Game Over", True, (255, 255, 255), (0, 0, 0)
+            "Game Over", True, self.display_cfg.white, self.display_cfg.black
         )
         text_rect = text.get_rect()
         text_x = self.display.get_width() / 2 - text_rect.width / 2
