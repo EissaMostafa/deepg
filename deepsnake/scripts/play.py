@@ -1,6 +1,5 @@
 from deepsnake.lib.games import SnakeGame
 import pygame, sys
-from deepsnake.cfg.default import GameStatus
 
 
 def main():
