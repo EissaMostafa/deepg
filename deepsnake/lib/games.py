@@ -17,6 +17,15 @@ class SnakeGame:
         )
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
+        self.grid = set(
+            [
+                (row, col)
+                for row in range(0, self.display_cfg.width, self.display_cfg.block_size)
+                for col in range(
+                    0, self.display_cfg.height, self.display_cfg.block_size
+                )
+            ]
+        )
         snake_head_init = (
             self.display_cfg.block_size
             * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
@@ -50,7 +59,6 @@ class SnakeGame:
         self._draw_display()
 
     def _draw_food(self):
-        # TODO: make sure to generate the food outside the snake, and substract the block_size from the randint
         pygame.draw.rect(
             self.display,
             self.display_cfg.green,
@@ -103,7 +111,6 @@ class SnakeGame:
     def _move_snake(self):
         h_x, h_y = self._get_next_location()
         if (h_x, h_y) == self.food:
-            self._create_new_food()
             self.score += 1
         else:
             self.snake.pop(0)  # Remove the end of the snake tail
@@ -141,23 +148,31 @@ class SnakeGame:
         if key == pygame.K_RIGHT and self.direction is not Direction.LEFT:
             self.direction = Direction.RIGHT
 
+    def _create_new_food(self):
+        # Method 1
+        if self.snake[-1] == self.food:
+            r = random.choice(list(self.grid - set(self.snake)))
+            self.food = Food(r[0], r[1])
+        # Method 2
+        # if self.snake[-1] == self.food:
+        #     self.food = Food(
+        #         random.choice(
+        #             range(0, self.display_cfg.width, self.display_cfg.block_size)
+        #         ),
+        #         random.choice(
+        #             range(0, self.display_cfg.height, self.display_cfg.block_size)
+        #         ),
+        #     )
+        # if self.food in self.snake:
+        #     self._create_new_food()
+
     def read_key(self, key_event):
         self.key_pressed.append(key_event)
 
     def play_step(self):
         self._exec_key()
         self._move_snake()
+        self._create_new_food()
         self._check_game_over()
         self._draw_display()
         self.clock.tick(self.game_cfg.speed)
-
-    def _create_new_food(self):
-        # Todo: Make sure food is not created within body of snake
-        self.food = Food(
-            random.choice(
-                range(0, self.display_cfg.width, self.display_cfg.block_size)
-            ),
-            random.choice(
-                range(0, self.display_cfg.height, self.display_cfg.block_size)
-            ),
-        )
