@@ -17,6 +17,15 @@ class SnakeGame:
         )
         self.display.fill(self.display_cfg.black)
         pygame.display.set_caption(self.display_cfg.caption)
+        self.grid = set(
+            [
+                (row, col)
+                for row in range(0, self.display_cfg.width, self.display_cfg.block_size)
+                for col in range(
+                    0, self.display_cfg.height, self.display_cfg.block_size
+                )
+            ]
+        )
         snake_head_init = (
             self.display_cfg.block_size
             * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
@@ -142,14 +151,7 @@ class SnakeGame:
     def _create_new_food(self):
         # Method 1
         if self.snake[-1] == self.food:
-            grid = [
-                (row, col)
-                for row in range(0, self.display_cfg.width, self.display_cfg.block_size)
-                for col in range(
-                    0, self.display_cfg.height, self.display_cfg.block_size
-                )
-            ]
-            r = random.choice([x for x in grid if x not in self.snake])
+            r = random.choice(list(self.grid - set(self.snake)))
             self.food = Food(r[0], r[1])
         # Method 2
         # if self.snake[-1] == self.food:
