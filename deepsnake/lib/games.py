@@ -26,6 +26,12 @@ class SnakeGame:
                 )
             ]
         )
+        self._set_initial_state()
+        self.score = 0
+        self.clock = pygame.time.Clock()
+        self._draw_display()
+
+    def _set_initial_state(self):
         snake_head_init = (
             self.display_cfg.block_size
             * int(self.display_cfg.width / (2 * self.display_cfg.block_size)),
@@ -53,10 +59,7 @@ class SnakeGame:
         )
         self.direction = Direction.RIGHT
         self.status = GameStatus.RUNNING
-        self.score = 0
         self.key_pressed = []
-        self.clock = pygame.time.Clock()
-        self._draw_display()
 
     def _draw_food(self):
         pygame.draw.rect(
@@ -111,8 +114,15 @@ class SnakeGame:
     def _move_snake(self):
         h_x, h_y = self._get_next_location()
         if (h_x, h_y) == self.food:
-            self.score += 1
+            self.score += 50
         else:
+            x_dist_new = abs(self.food.x - h_x)
+            x_dist_old = abs(self.food.x - self.snake[-1][0])
+            y_dist_new = abs(self.food.y - h_y)
+            y_dist_old = abs(self.food.y - self.snake[-1][1])
+            # if (x_dist_new > x_dist_new) or (y_dist_new > y_dist_old):
+            #    self.score -= 1
+
             self.snake.pop(0)  # Remove the end of the snake tail
         self.snake.append((h_x, h_y))  # Append a new head
 
@@ -123,7 +133,9 @@ class SnakeGame:
         self_hit_cond = (h_x, h_y) in self.snake[:-1]
         if width_cond or height_cond or self_hit_cond:
             self._game_over()
-            sys.exit()
+            self.score -= 100
+            self._set_initial_state()
+            # sys.exit()
 
     def _game_over(self):
         # If game over is true, draw game over
@@ -176,3 +188,71 @@ class SnakeGame:
         self._check_game_over()
         self._draw_display()
         self.clock.tick(self.game_cfg.speed)
+
+    def get_state(self):
+        h_x, h_y = self.snake[-1]
+        f_x, f_y = self.food.x, self.food.y
+
+        obstacle_left_state = ((h_x - self.display_cfg.block_size) < 0) or (
+            (h_x - self.display_cfg.block_size, h_y) in self.snake
+        )
+        obstacle_right_state = (
+            (h_x + self.display_cfg.block_size) >= self.display_cfg.width
+        ) or ((h_x + self.display_cfg.block_size, h_y) in self.snake)
+        obstacle_up_state = ((h_y - self.display_cfg.block_size) < 0) or (
+            (h_x, h_y - self.display_cfg.block_size) in self.snake
+        )
+        obstacle_down_state = (
+            (h_y + self.display_cfg.block_size) >= self.display_cfg.height
+        ) or ((h_x, h_y + self.display_cfg.block_size) in self.snake)
+        # --> 4*4 = 16 states
+
+        # 3*3 = 9 states
+
+        moving_left_state = self.direction == Direction.LEFT
+        moving_right_state = self.direction == Direction.RIGHT
+        moving_up_state = self.direction == Direction.UP
+        moving_down_state = self.direction == Direction.DOWN
+
+        food_left_state = f_x < h_x
+        food_right_state = f_x > h_x
+        food_up_state = f_y < h_y
+        food_down_state = f_y > h_y
+
+        horizontal_binary = "".join(
+            ["1" if x else "0" for x in [food_left_state, food_right_state]]
+        )
+        vertical_binary = "".join(
+            ["1" if x else "0" for x in [food_up_state, food_down_state]]
+        )
+        horizontal_number = int(horizontal_binary, 2)
+        vertical_number = int(vertical_binary, 2)
+        # food_number = horizontal_number * 3 + vertical_number  # (= max 9)
+
+        if moving_left_state:
+            moving_number = 0
+        elif moving_right_state:
+            moving_number = 1
+        elif moving_up_state:
+            moving_number = 2
+        else:
+            moving_number = 3
+
+        obstacle_binary = "".join(
+            [
+                "1" if x else "0"
+                for x in [
+                    obstacle_left_state,
+                    obstacle_right_state,
+                    obstacle_up_state,
+                    obstacle_down_state,
+                ]
+            ]
+        )
+        obstacle_number = int(obstacle_binary, 2)
+
+        state_number = obstacle_number * 36 + (
+            moving_number * 9 + (horizontal_number * 3 + vertical_number)
+        )
+
+        return state_number
